@@ -1,13 +1,19 @@
-import { withAuth } from "next-auth/middleware"
+import { withAuth } from "next-auth/middleware";
 
 export default withAuth({
   pages: {
-    signIn: "/login"
+    signIn: "/login",
   },
   callbacks: {
-    authorized: ({ req }) => Boolean(req.cookies.get("next-auth.session-token"))
+    authorized: ({ req }) => {
+      const token =
+        req.cookies.get("next-auth.session-token")?.value ||
+        req.cookies.get("__Secure-next-auth.session-token")?.value;
+
+      return !!token;
+    },
   },
-})
+});
 
 export const config = {
   matcher: [
@@ -20,6 +26,6 @@ export const config = {
      * - assets directory in /public (public static assets)
      * - favicon.ico, sitemap.xml, robots.txt (metadata files)
      */
-    '/((?!api|_next/static|_next/image|assets|results|favicon.ico|sitemap.xml|robots.txt).*)',
+    "/((?!api|_next/static|_next/image|assets|results|favicon.ico|sitemap.xml|robots.txt).*)",
   ],
-}
+};
