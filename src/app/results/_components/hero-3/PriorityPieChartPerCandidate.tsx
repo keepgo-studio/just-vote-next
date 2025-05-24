@@ -16,8 +16,8 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 import { candidatesEnum, priorityQuestions } from "@/lib/vars";
-import type { PriorityRank } from "@/lib/actions";
-import { useMemo } from "react";
+import { readPriority, type PriorityRank } from "@/lib/actions";
+import { useEffect, useState } from "react";
 
 // 색상은 index 기준으로 반복
 const CHART_COLORS = [
@@ -35,38 +35,50 @@ type PieItem = {
   fill: string; // 색상
 };
 
-export default function CandidatePriorityPieChart({
-  data,
-}: {
-  data: PriorityRank;
-}) {
-  const chartList = useMemo(() => {
-    return candidatesEnum.map((candidate) => {
-      const pieData: PieItem[] = priorityQuestions.map((label, idx) => {
-        const count =
-          data[idx]?.find((d) => d.candidate === candidate)?.count ?? 0;
-        return {
-          name: label,
-          count,
-          fill: CHART_COLORS[idx % CHART_COLORS.length],
-        };
-      });
+export default function CandidatePriorityPieChart() {
+  const [data, setData] = useState<PriorityRank | null>(null);
+  const [loading, setLoading] = useState(false);
 
-      const chartConfig: ChartConfig = pieData.reduce((acc, cur, idx) => {
-        acc[cur.name] = {
-          label: cur.name,
-          color: CHART_COLORS[idx % CHART_COLORS.length],
-        };
-        return acc;
-      }, {} as ChartConfig);
+  useEffect(() => {
+    setLoading(true);
+    readPriority()
+      .then(setData)
+      .finally(() => setLoading(false));
+  }, []);
 
+  if (loading || !data) {
+    return (
+      <div className="text-center py-10 text-sm text-muted-foreground">
+        로딩 중...
+      </div>
+    );
+  }
+
+  const chartList = candidatesEnum.map((candidate) => {
+    const pieData: PieItem[] = priorityQuestions.map((label, idx) => {
+      const count =
+        data[idx]?.find((d) => d.candidate === candidate)?.count ?? 0;
       return {
-        candidate,
-        data: pieData,
-        config: chartConfig,
+        name: label,
+        count,
+        fill: CHART_COLORS[idx % CHART_COLORS.length],
       };
     });
-  }, [data]);
+
+    const chartConfig: ChartConfig = pieData.reduce((acc, cur, idx) => {
+      acc[cur.name] = {
+        label: cur.name,
+        color: CHART_COLORS[idx % CHART_COLORS.length],
+      };
+      return acc;
+    }, {} as ChartConfig);
+
+    return {
+      candidate,
+      data: pieData,
+      config: chartConfig,
+    };
+  });
 
   return (
     <div className="flex flex-col gap-4">

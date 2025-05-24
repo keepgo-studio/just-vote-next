@@ -1,9 +1,29 @@
-import type { RankInfo as RankInfoType } from "@/lib/actions";
-import React from "react";
+"use client"
+
+import { readRankInfo, type RankInfo as RankInfoType } from "@/lib/actions";
+import React, { useEffect, useState } from "react";
 import { Users, MapPin, Calendar, VenusAndMars } from "lucide-react";
 import { ageGroupsEnum, regionsEnum } from "@/lib/vars";
 
-export default function RankInfo({ data }: { data: RankInfoType }) {
+export default function RankInfo() {
+  const [data, setData] = useState<RankInfoType | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    readRankInfo()
+      .then(setData)
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading || !data) {
+    return (
+      <div className="text-center py-10 text-sm text-muted-foreground">
+        로딩 중...
+      </div>
+    );
+  }
+
   return (
     <section className="grid gap-4 grid-cols-1 sm:grid-cols-2 max-w-3xl m-auto">
       {/* 총 투표 수 */}

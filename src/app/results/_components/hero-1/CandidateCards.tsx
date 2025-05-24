@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import type { OverviewData } from "@/lib/actions";
+import React, { useEffect, useState } from "react";
+import { readOverviewData, type OverviewData } from "@/lib/actions";
 import { Card } from "@/components/ui/card";
 import Image from "next/image";
 import {
@@ -16,10 +16,28 @@ import { cn } from "@/lib/utils";
 import { Pin } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 
-export default function CandidateCards({ data }: { data: OverviewData }) {
+export default function CandidateCards() {
+  const isMobile = useIsMobile();
   const [pinnedArr, setPinnedArr] = useState<boolean[]>(candidatesEnum.map(() => false));
 
-  const isMobile = useIsMobile();
+  const [data, setData] = useState<OverviewData | null>(null);
+  const [loading, setLoading] = useState(false);
+  
+  useEffect(() => {
+    setLoading(true);
+    readOverviewData()
+    .then(setData)
+    .finally(() => setLoading(false));
+  }, []);
+
+  if (loading || !data) {
+    return (
+      <div className="text-center text-muted-foreground py-10 text-sm">
+        로딩 중...
+      </div>
+    );
+  }
+
   const sorted = Object.entries(data).sort(([, a], [, b]) => b.total - a.total);
   const totalCnt = Object.entries(data).reduce((val, [, curr]) => val + curr.total, 0);
 

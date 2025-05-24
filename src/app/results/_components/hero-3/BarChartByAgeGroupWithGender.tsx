@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import type { AgeGroupGenderRank } from "@/lib/actions";
+import React, { useEffect, useState } from "react";
+import { readRankOfAgeGroupWithGender, type AgeGroupGenderRank } from "@/lib/actions";
 import {
   ageGroupsEnum,
   candidateColorMap,
@@ -35,11 +35,25 @@ type ChartConfig = Record<
   }
 >;
 
-export default function BarChartByAgeGroupWithGender({
-  data,
-}: {
-  data: AgeGroupGenderRank;
-}) {
+export default function BarChartByAgeGroupWithGender() {
+  const [data, setData] = useState<AgeGroupGenderRank | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    readRankOfAgeGroupWithGender()
+      .then(setData)
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading || !data) {
+    return (
+      <div className="text-center py-10 text-sm text-muted-foreground">
+        로딩 중...
+      </div>
+    );
+  }
+
   const chartData = transformAgeGroupGenderRankToBarDataItems(data);
   const chartConfig = generateChartConfig();
   const allKeys = Object.keys(chartConfig) as Array<keyof typeof chartConfig>;

@@ -28,7 +28,7 @@ export default function VoteForm({
   const isError = useSelector(actorRef, state => state.matches("error"));
   const isLoading = useSelector(actorRef, state => state.matches("voting"));
   const isComplete = useSelector(actorRef, state => state.matches("complete"));
-  const isDone = useSelector(actorRef, state => state.matches("done") || state.matches("complete"));
+  const isDone = useSelector(actorRef, state => state.matches("done"));
 
   useEffect(() => {
     actorRef.send({ type: "START_VOTE", userId });

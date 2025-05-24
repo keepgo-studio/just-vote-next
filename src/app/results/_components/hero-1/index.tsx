@@ -1,13 +1,9 @@
 import React from 'react'
 import CandidateCards from './CandidateCards'
-import { readOverviewData, readRankInfo } from '@/lib/actions'
 import { MousePointerClick } from 'lucide-react';
 import RankInfo from './RankInfo';
 
-export default async function Hero1() {
-  const cardData = await readOverviewData();
-  const rankInfo = await readRankInfo();
-
+export default function Hero1() {
   return (
     <div>
       <h1 className='text-4xl font-bold flex'>각 후보 지지율</h1>
@@ -20,12 +16,12 @@ export default async function Hero1() {
       </p>
       <div className='h-4'/>
       <div className='h-10'/>
-      <CandidateCards data={cardData}/>
+      <CandidateCards />
 
       <div className='h-10'/>
       <h1 className='text-2xl font-bold'>투표 정보</h1>
       <div className='h-4'/>
-      <RankInfo data={rankInfo}/>
+      <RankInfo />
     </div>
   );
 }
