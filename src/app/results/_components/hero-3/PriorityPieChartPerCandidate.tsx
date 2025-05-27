@@ -91,7 +91,7 @@ export default function CandidatePriorityPieChart() {
           <CardContent className="flex-1 pb-0">
             <ChartContainer
               config={config}
-              className="mx-auto max-h-[320px] px-0 w-full"
+              className="mx-auto aspect-square max-h-[300px] p-0"
             >
               <PieChart margin={{ top: 24, right: 0, left: 0, bottom: 24 }}>
                 <ChartTooltip content={<ChartTooltipContent nameKey="name" />} />
