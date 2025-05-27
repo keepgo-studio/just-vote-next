@@ -313,10 +313,10 @@ export async function readPriority() {
 
 export async function readUpdateDate() {
   const [latest] = await db
-    .select({ createdAt: voteAggregates.createdAt })
+    .select({ updateAt: voteAggregates.updatedAt })
     .from(voteAggregates)
-    .orderBy(desc(voteAggregates.createdAt))
+    .orderBy(desc(voteAggregates.updatedAt))
     .limit(1);
 
-  return latest?.createdAt ?? null;
+  return latest?.updateAt ?? null;
 }
